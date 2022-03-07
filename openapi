@@ -1,0 +1,581 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:8080/api'
+info:
+  title: Toolshop Api
+  description: All Endpoints for the toolshop module
+  version: '1'
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+  /user:
+    get:
+      tags:
+        - User
+      summary: Retrieves the currently logged in user
+      operationId: getUser
+      responses:
+        '200':
+          description: user Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+  /tool:
+    get:
+      tags:
+        - Tool
+      summary: retrieves all tools with filter option
+      operationId: getToolsBySearchTerm
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: tools Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ToolDto'
+    post:
+      tags:
+        - Tool
+      summary: adds a new tool
+      operationId: addTool
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToolDto'
+      responses:
+        '201':
+          description: Created
+  /toolpage:
+    get:
+      tags:
+        - Tool
+      summary: retrieves all tools with filter option in a page
+      operationId: getAllTools
+      parameters:
+        - in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: pageSize
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: articleId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: dmc
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: drawingId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: drawingIndex
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: toolNumber
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: toolIndex
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: safetyPart
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: minorRepairIntervall
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: majorRepairIntervall
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: toolTypeId
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: toolTypeNames
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Tools succesfully fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolPage'
+  '/tool/{toolId}':
+    put:
+      tags:
+        - Tool
+      summary: update a specific tool
+      operationId: updateTool
+      parameters:
+        - in: path
+          name: toolId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToolDto'
+      responses:
+        '201':
+          description: Tool succesfully updated
+    delete:
+      tags:
+        - Tool
+      summary: delete a tool by its id
+      operationId: deleteTool
+      parameters:
+        - in: path
+          name: toolId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Tool succesfully deleted
+    post:
+      tags:
+        - Tool
+      summary: copy a tool by its id
+      operationId: copyTool
+      parameters:
+        - in: path
+          name: toolId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToolDto'
+      responses:
+        '201':
+          description: Tool successfully added
+  '/tool/{toolNumber}':
+    get:
+      tags:
+        - Tool
+      summary: >-
+        retrieves all tools by a given toolnumber, there are existing multiple
+        tools with the same number but differnt tool indices
+      operationId: getAllToolsByToolNumber
+      parameters:
+        - in: path
+          name: toolNumber
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: pageSize
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tools succesfully fetched by their toolnumber
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolPage'
+  /toolType:
+    get:
+      tags:
+        - Tool
+      summary: retrieves all tools types
+      operationId: getAllToolTypes
+      responses:
+        '200':
+          description: tools Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ToolTypeDto'
+  '/testdimension/tool/{toolId}':
+    post:
+      tags:
+        - TestDimension
+      summary: adds an array of test dimensions for a specific tool
+      operationId: addByToolId
+      parameters:
+        - in: path
+          name: toolId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestDimensionDto'
+      responses:
+        '201':
+          description: Created
+    get:
+      tags:
+        - TestDimension
+      summary: retrieves all TestDimensions for a specific tool
+      operationId: getAllByToolID
+      parameters:
+        - in: path
+          name: toolId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: TestDimension Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TestDimensionDto'
+  '/testdimension/{id}':
+    put:
+      tags:
+        - TestDimension
+      summary: updates an Testdimension by id
+      operationId: updateById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestDimensionDto'
+      responses:
+        '201':
+          description: Created
+    delete:
+      tags:
+        - TestDimension
+      summary: deletes a testdimension by id
+      operationId: deleteById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TestDimensionDto'
+      responses:
+        '201':
+          description: Deleted
+  '/testdimension/{id}/testexecution':
+    post:
+      tags:
+        - TestDimension
+      summary: adds an testexecution value for an specific testdimension
+      operationId: addTestexecutionById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestExecutionDto'
+      responses:
+        '201':
+          description: Created
+  /modula-location/:
+    get:
+      tags:
+        - Location
+      summary: retrieves all posiible modula locations
+      operationId: getAllModulaLocations
+      responses:
+        '200':
+          description: modula location Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModulaLocationDto'
+  '/location/{toolId}':
+    post:
+      tags:
+        - Location
+      summary: change the location of a specific tool
+      operationId: changeToolLocation
+      parameters:
+        - in: path
+          name: toolId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModulaLocationDto'
+      responses:
+        '201':
+          description: Created
+components:
+  schemas:
+    UserDto:
+      type: object
+      properties:
+        username:
+          type: string
+        firstName:
+          type: string
+        secondName:
+          type: string
+        locale:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRoleDto'
+    UserRoleDto:
+      type: string
+      enum:
+        - ROLE_ADMINISTRATOR
+        - ROLE_SUPERVISOR
+        - ROLE_TECHNIC
+    ToolPage:
+      type: object
+      properties:
+        totalSize:
+          type: integer
+          format: int64
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolDto'
+    ToolDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        createdOn:
+          type: string
+          format: date-time
+        updatedOn:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+        articleId:
+          type: string
+        numberReason:
+          $ref: '#/components/schemas/NumberReasonDto'
+        safetyNote:
+          type: boolean
+        majorRepairIntervall:
+          type: integer
+          format: int64
+        minorRepairIntervall:
+          type: integer
+          format: int64
+        dmc:
+          type: string
+        userName:
+          type: string
+        firstname:
+          type: string
+        secondName:
+          type: string
+        toolType:
+          $ref: '#/components/schemas/ToolTypeDto'
+        toolLocation:
+          $ref: '#/components/schemas/ToolLocationDto'
+        executedTests:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestDimensionsDto'
+        usableWith:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolDto'
+    NumberReasonDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        drawingId:
+          type: string
+        drawingIndex:
+          type: string
+        toolId:
+          type: string
+        toolIndex:
+          type: string
+    ToolTypeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    ToolLocationDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        shelf:
+          type: integer
+          format: int64
+        storage:
+          type: integer
+          format: int64
+        machineName:
+          type: string
+        description:
+          type: string
+    TestDimensionsDto:
+      type: object
+      properties:
+        testDimensionId:
+          type: integer
+          format: int64
+        testDimensionName:
+          type: integer
+          format: int32
+        drawingId:
+          type: string
+        drawingIndex:
+          type: string
+        executedTests:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExecutedTestDimensionsDto'
+    ExecutedTestDimensionsDto:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        username:
+          type: string
+        firstName:
+          type: string
+        secondName:
+          type: string
+        value:
+          type: number
+          format: double
+    TestDimensionDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        drawingId:
+          type: string
+        drawingIndex:
+          type: string
+        name:
+          type: integer
+        deleted:
+          type: boolean
+    TestExecutionDto:
+      type: object
+      properties:
+        toolId:
+          type: integer
+          format: int64
+        value:
+          type: number
+          format: double
+    ModulaLocationDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        shelfId:
+          type: integer
+          format: int64
+        storageId:
+          type: integer
+          format: int64
+        description:
+          type: string
